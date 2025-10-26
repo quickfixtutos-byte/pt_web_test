@@ -31,20 +31,22 @@ export default function SubscriptionStatus() {
     nextExpiration: null as string | null
   });
 
+  const fetchSubscriptionSummary = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const summary = await SubscriptionService.getUserSubscriptionSummary(user.id);
+      setSubscriptionSummary(summary);
+    } catch (error) {
+      console.error('Error fetching subscription summary:', error);
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     if (user) {
       fetchSubscriptionSummary();
     }
   }, [user, fetchSubscriptionSummary]);
-
-  const fetchSubscriptionSummary = useCallback(async () => {
-    try {
-      const summary = await SubscriptionService.getUserSubscriptionSummary(user?.id || '');
-      setSubscriptionSummary(summary);
-    } catch (error) {
-      console.error('Error fetching subscription summary:', error);
-    }
-  }, [user]);
 
   const getStatusColor = () => {
     if (isExpired) return 'text-red-600 bg-red-50';
